@@ -1,5 +1,5 @@
 import React, {Fragment, useEffect, useState} from 'react';
-import {Paper} from '@material-ui/core';
+import {Button, Paper} from '@material-ui/core';
 import IStudent from '../types/IStudent';
 import {addStudentEvent} from "./StudentPage";
 
@@ -21,15 +21,34 @@ const StudentList = () => {
         getStudents()
     })
 
+    const deleteStudent = async (id: number | undefined) => {
+        if ((typeof (id) == "number")) {
+            const deleteStudents = await fetch("http://localhost:8080/student/" + id, {
+                method: 'DELETE'
+            });
+            getStudents();
+        }
+
+    }
+
     function getStudentList() {
         let paper = <Paper elevation={3} style={paperStyle}>
 
             {students.map(student => (
-                <Paper elevation={6} style={{margin: "10px", padding: "15px", textAlign: "left"}}
-                       key={student.id}>
-                    Id:{student.id}<br/>
-                    Name:{student.name}<br/>
-                    Address:{student.address}
+                <Paper id="1" style={{margin: "10px", padding: "15px", textAlign: "left", display: "inline-flex"}}>
+                    <Paper elevation={6}
+                        // style={{margin: "10px", padding: "15px", textAlign: "left"}}
+                           key={student.id}>
+                        Id:{student.id}<br/>
+                        Name:{student.name}<br/>
+                        Address:{student.address}
+                    </Paper>
+                    <div style={{
+                        margin: "10px",
+                        padding: "15px",
+                        textAlign: "left",
+                    }}><Button>Edit</Button><Button onClick={() => deleteStudent(student.id)}>Delete</Button>
+                    </div>
                 </Paper>
             ))
             }
