@@ -2,10 +2,15 @@ import React, {Fragment, useEffect, useState} from 'react';
 import {Button, Paper} from '@material-ui/core';
 import IStudent from '../types/IStudent';
 import {addStudentEvent} from "./StudentPage";
+import {useAtom} from "simple-atom";
+import {selectedStudent, webpage} from "../App";
+
 
 const StudentList = () => {
     const paperStyle = {padding: '50px 20px', width: 600, margin: "20px auto"}
+    const [webState, setWebState] = useAtom(webpage);
     const [students, setStudents] = useState(new Array<IStudent>());
+    const [student, setStudent] = useAtom(selectedStudent)
 
     const getStudents = async () => {
         const getStudents = await fetch("http://localhost:8080/student/getAll");
@@ -31,14 +36,18 @@ const StudentList = () => {
 
     }
 
+    function navigateToEditStudent(student: IStudent) {
+        setStudent(student);
+        setWebState("edit");
+    }
+
     function getStudentList() {
         let paper = <Paper elevation={3} style={paperStyle}>
 
             {students.map(student => (
-                <Paper id="1" style={{margin: "10px", padding: "15px", textAlign: "left", display: "inline-flex"}}>
-                    <Paper elevation={6}
-                        // style={{margin: "10px", padding: "15px", textAlign: "left"}}
-                           key={student.id}>
+                <Paper id="1" key={student.id}
+                       style={{margin: "10px", padding: "15px", textAlign: "left", display: "inline-flex"}}>
+                    <Paper elevation={6}>
                         Id:{student.id}<br/>
                         Name:{student.name}<br/>
                         Address:{student.address}
@@ -47,7 +56,8 @@ const StudentList = () => {
                         margin: "10px",
                         padding: "15px",
                         textAlign: "left",
-                    }}><Button>Edit</Button><Button onClick={() => deleteStudent(student.id)}>Delete</Button>
+                    }}><Button onClick={() => navigateToEditStudent(student)}>Edit</Button><Button
+                        onClick={() => deleteStudent(student.id)}>Delete</Button>
                     </div>
                 </Paper>
             ))
