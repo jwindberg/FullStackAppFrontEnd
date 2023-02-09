@@ -1,11 +1,16 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {Button, Paper} from '@material-ui/core';
 import IStudent from '../types/IStudent';
-import {addStudentEvent} from "./StudentPage";
+import {selectedStudentEvent} from "./StudentPage";
+import {Link, Route} from "wouter";
+import EditStudent from "./EditStudent";
+import {useAtom} from "simple-atom";
 
 const StudentList = () => {
     const paperStyle = {padding: '50px 20px', width: 600, margin: "20px auto"}
     const [students, setStudents] = useState(new Array<IStudent>());
+    const [studentSemaphore, setStudentSemaphore] = useAtom(selectedStudentEvent);
+
 
     const getStudents = async () => {
         const getStudents = await fetch("http://localhost:8080/student/getAll");
@@ -17,9 +22,6 @@ const StudentList = () => {
         getStudents()
     }, [])
 
-    addStudentEvent.subscribe((value) => {
-        getStudents()
-    })
 
     const deleteStudent = async (id: number | undefined) => {
         if ((typeof (id) == "number")) {
@@ -47,7 +49,8 @@ const StudentList = () => {
                         margin: "10px",
                         padding: "15px",
                         textAlign: "left",
-                    }}><Button>Edit</Button><Button onClick={() => deleteStudent(student.id)}>Delete</Button>
+                    }}><Link href="/student/"><Button>Edit</Button></Link>
+                        <Button onClick={() => deleteStudent(student.id)}>Delete</Button>
                     </div>
                 </Paper>
             ))
@@ -56,6 +59,8 @@ const StudentList = () => {
         return <Fragment>
             <h1>Students</h1>
             {paper}
+
+            <Route path="/student/" component={EditStudent}/>
         </Fragment>;
     }
 
